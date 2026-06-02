@@ -1,0 +1,47 @@
+{
+  "title": "PGE Time-of-Day Price",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Portland General Electric Time-of-Day Pricing",
+        "description": "Please enter your current Portland General Electric Time-of-Day rates. The defaults reflect 2026 rates.",
+        "data": {
+          "rate_off_peak": "Off-Peak Rate ($/kWh)",
+          "rate_mid_peak": "Mid-Peak Rate ($/kWh)",
+          "rate_on_peak": "On-Peak Rate ($/kWh)"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Already configured. Only a single configuration is possible."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Update Portland General Electric Time-of-Day Rates",
+        "description": "Update your current pricing rates.",
+        "data": {
+          "rate_off_peak": "Off-Peak Rate ($/kWh)",
+          "rate_mid_peak": "Mid-Peak Rate ($/kWh)",
+          "rate_on_peak": "On-Peak Rate ($/kWh)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "period": {
+        "name": "Pricing Period",
+        "state": {
+          "off-peak": "Off-Peak",
+          "mid-peak": "Mid-Peak",
+          "on-peak": "On-Peak"
+        }
+      },
+      "price": {
+        "name": "Current Price"
+      }
+    }
+  }
+}
