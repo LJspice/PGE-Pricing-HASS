@@ -1,14 +1,14 @@
 {
   "domain": "pge_pricing",
   "name": "PGE Time-of-Day Price",
-  "version": "1.0.0",
-  "integration_type": "service",
-  "documentation": "https://github.com/LJspice/portland_general_pricing",
-  "issue_tracker": "https://github.com/LJspice/portland_general_pricing/issues",
-  "dependencies": [],
   "codeowners": ["@LJspice"],
-  "requirements": [],
-  "iot_class": "calculated",
   "config_flow": true,
-  "single_config_entry": true
+  "dependencies": [],
+  "documentation": "https://github.com/LJspice/portland_general_pricing",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/LJspice/portland_general_pricing/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "1.0.0"
 }
