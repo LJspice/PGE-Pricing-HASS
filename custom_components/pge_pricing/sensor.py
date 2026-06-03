@@ -265,8 +265,6 @@ class PGEPricingCoordinator(DataUpdateCoordinator[PGEPricingData]):
 class PGEPricingBaseEntity(CoordinatorEntity[PGEPricingCoordinator], SensorEntity):
     """Base representation of a PGE Pricing entity."""
 
-    _attr_has_entity_name = True
-
     def __init__(self, coordinator: PGEPricingCoordinator, entry: ConfigEntry) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
@@ -277,10 +275,19 @@ class PGEPricingBaseEntity(CoordinatorEntity[PGEPricingCoordinator], SensorEntit
             entry_type=DeviceEntryType.SERVICE,
         )
 
+    async def async_will_remove_from_hass(self) -> None:
+        """Cleanup any scheduled transition callback when the entity is removed."""
+        if self.coordinator._unsub_next_transition:
+            self.coordinator._unsub_next_transition()
+            self.coordinator._unsub_next_transition = None
+
+        await super().async_will_remove_from_hass()
+
 
 class PGEPricingPeriodSensor(PGEPricingBaseEntity):
-    """Representation of a PGE Pricing Period sensor."""
+    """Representation of a PGE Time-of-Day Period sensor."""
 
+    _attr_name = "PGE Price Period"
     _attr_translation_key = "period"
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_options = ["off-peak", "mid-peak", "on-peak"]
@@ -320,8 +327,9 @@ class PGEPricingPeriodSensor(PGEPricingBaseEntity):
 
 
 class PGEPricingPriceSensor(PGEPricingBaseEntity):
-    """Representation of a PGE Pricing Price sensor."""
+    """Representation of a PGE Time-of-Day Price sensor."""
 
+    _attr_name = "PGE Current Price"
     _attr_translation_key = "price"
     _attr_native_unit_of_measurement = "USD/kWh"
     _attr_device_class = SensorDeviceClass.MONETARY

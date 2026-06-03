@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 
-"""Config flow for PGE Time-of-Day Pricing integration."""
+"""Config flow for PGE Time-of-Day Price integration."""
 
 from __future__ import annotations
 
@@ -62,7 +62,7 @@ class PGEPricingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class PGEPricingOptionsFlow(config_entries.OptionsFlow):
-    """Handle options flow for PGE Pricing."""
+    """Handle options flow for PGE Time-of-Day Price."""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""

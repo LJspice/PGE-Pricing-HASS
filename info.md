@@ -1,4 +1,4 @@
-# Portland General Electric Time-of-Day Pricing
+# Portland General Electric Time-of-Day Price
 
 Home Assistant custom component to track Portland General Electric's (PGE) Time-of-Day pricing periods and current rates.
 

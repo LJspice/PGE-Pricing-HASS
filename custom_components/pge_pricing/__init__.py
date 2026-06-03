@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 
-"""The PGE Time-of-Day Pricing integration."""
+"""The PGE Time-of-Day Price integration."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up PGE Time-of-Day Pricing from a config entry."""
+    """Set up PGE Time-of-Day Price from a config entry."""
     hass.data.setdefault(DOMAIN, {})
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

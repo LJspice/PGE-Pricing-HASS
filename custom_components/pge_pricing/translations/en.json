@@ -32,7 +32,7 @@
   "entity": {
     "sensor": {
       "period": {
-        "name": "Pricing Period",
+        "name": "PGE Price Period",
         "state": {
           "off-peak": "Off-Peak",
           "mid-peak": "Mid-Peak",
@@ -40,7 +40,7 @@
         }
       },
       "price": {
-        "name": "Current Price"
+        "name": "PGE Current Price"
       }
     }
   }

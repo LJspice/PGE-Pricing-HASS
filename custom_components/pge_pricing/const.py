@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 
-"""Constants for the PGE Time-of-Day Pricing integration."""
+"""Constants for the PGE Time-of-Day Price integration."""
 
 import datetime
 from typing import Final
