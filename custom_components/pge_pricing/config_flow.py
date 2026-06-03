@@ -44,9 +44,18 @@ class PGEPricingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         data_schema: vol.Schema = vol.Schema(
             {
-                vol.Required(CONF_RATE_OFF_PEAK, default=DEFAULT_RATE_OFF_PEAK): float,
-                vol.Required(CONF_RATE_MID_PEAK, default=DEFAULT_RATE_MID_PEAK): float,
-                vol.Required(CONF_RATE_ON_PEAK, default=DEFAULT_RATE_ON_PEAK): float,
+                vol.Required(
+                    CONF_RATE_OFF_PEAK,
+                    default=DEFAULT_RATE_OFF_PEAK,
+                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
+                vol.Required(
+                    CONF_RATE_MID_PEAK,
+                    default=DEFAULT_RATE_MID_PEAK,
+                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
+                vol.Required(
+                    CONF_RATE_ON_PEAK,
+                    default=DEFAULT_RATE_ON_PEAK,
+                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
             }
         )
 
@@ -86,21 +95,21 @@ class PGEPricingOptionsFlow(config_entries.OptionsFlow):
                         CONF_RATE_OFF_PEAK,
                         data.get(CONF_RATE_OFF_PEAK, DEFAULT_RATE_OFF_PEAK),
                     ),
-                ): float,
+                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
                 vol.Required(
                     CONF_RATE_MID_PEAK,
                     default=options.get(
                         CONF_RATE_MID_PEAK,
                         data.get(CONF_RATE_MID_PEAK, DEFAULT_RATE_MID_PEAK),
                     ),
-                ): float,
+                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
                 vol.Required(
                     CONF_RATE_ON_PEAK,
                     default=options.get(
                         CONF_RATE_ON_PEAK,
                         data.get(CONF_RATE_ON_PEAK, DEFAULT_RATE_ON_PEAK),
                     ),
-                ): float,
+                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
             }
         )
 
