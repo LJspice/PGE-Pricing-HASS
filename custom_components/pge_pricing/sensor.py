@@ -333,7 +333,6 @@ class PGEPricingPriceSensor(PGEPricingBaseEntity):
     _attr_translation_key = "price"
     _attr_native_unit_of_measurement = "USD/kWh"
     _attr_device_class = SensorDeviceClass.MONETARY
-    _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(self, coordinator: PGEPricingCoordinator, entry: ConfigEntry) -> None:
         """Initialize the sensor."""
