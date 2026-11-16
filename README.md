@@ -17,12 +17,12 @@ A custom integration for Home Assistant that provides the current pricing period
 - Dynamically updates the `cost_per_kwh` attribute based on the time, day of the week, and holidays.
 - Correctly accounts for PGE-recognized holidays and their observed weekend shift rules.
 
-## Installation via HACS
+## Installation
 
-1. Open HACS in Home Assistant.
-2. Click the three dots in the top right corner and select "Custom repositories".
-3. Add the URL of this repository and select "Integration" as the category.
-4. Search for "Portland General Electric Time-of-Day Price" in HACS and install it.
+1. Open Home Assistant.
+2. Navigate to `Settings` -> `Marketplace`.
+3. Search for `Portland General Electric Time-of-Day Price`.
+4. Click `Install`.
 5. Restart Home Assistant.
 
 ## Configuration
@@ -38,14 +38,4 @@ If your rates change in the future, click the "Configure" button on the integrat
 
 You can use the `sensor.pge_pricing_period` to trigger heavy loads like EV charging or running the dishwasher only when electricity is cheap.
 
-```yaml
-alias: "Start EV Charging off-peak"
-trigger:
-  - platform: state
-    entity_id: sensor.pge_pricing_period
-    to: "off-peak"
-action:
-  - service: switch.turn_on
-    target:
-      entity_id: switch.ev_charger
-```
+See [github.com/LJspice/ev_charger_tod_override.yaml](https://gist.github.com/LJspice/8b4ed184207c2a58257d29a49dd57377) for an example.
