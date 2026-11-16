@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 LJspice <lj5975@pm.me>
+#
+# SPDX-License-Identifier: MIT
+
 name: "Prek Checks"
 
 on:
@@ -5,7 +9,8 @@ on:
   push:
     branches: [ "main" ]
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   prek:
@@ -13,6 +18,8 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: 'Run Prek'
         uses: j178/prek-action@44924fe9ef4a6f88253c4b6b1bf11c689d3ce53d # v3.1.0

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 LJspice <lj5975@pm.me>
+#
 # SPDX-License-Identifier: MIT
 
 """Sensor platform for PGE Time-of-Day Pricing."""

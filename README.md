@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 LJspice <lj5975@pm.me>
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 # Portland General Electric Time-of-Day Price
 
 A custom integration for Home Assistant that provides the current pricing period and cost for Portland General Electric's (PGE) [Time-of-Day](https://portlandgeneral.com/about/info/pricing-plans/time-of-day) pricing plan. This is an offline integration reliant only on configured prices, they are not requested over the network.

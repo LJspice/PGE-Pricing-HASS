@@ -1,6 +1,9 @@
 {
   "domain": "pge_pricing",
   "name": "PGE Time-of-Day Price",
+  "categories": [
+    "energy.energy_prices"
+  ],
   "codeowners": ["@LJspice"],
   "config_flow": true,
   "dependencies": [],

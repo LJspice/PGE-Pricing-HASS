@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 LJspice <lj5975@pm.me>
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 # Portland General Electric Time-of-Day Price
 
 Home Assistant custom component to track Portland General Electric's (PGE) Time-of-Day pricing periods and current rates.

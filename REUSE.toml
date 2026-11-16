@@ -1,0 +1,9 @@
+version = 1
+SPDX-PackageName = "PGE-Pricing-HASS"
+SPDX-PackageSupplier = "LJspice"
+SPDX-PackageDownloadLocation = "https://github.com/LJspice/PGE-Pricing-HASS"
+
+[[annotations]]
+path = "**.json"
+SPDX-FileCopyrightText = "2026 LJspice <lj5975@pm.me>"
+SPDX-License-Identifier = "MIT"

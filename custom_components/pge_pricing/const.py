@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 LJspice <lj5975@pm.me>
+#
 # SPDX-License-Identifier: MIT
 
 """Constants for the PGE Time-of-Day Price integration."""
