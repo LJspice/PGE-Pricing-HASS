@@ -4,27 +4,21 @@
 
 """Sensor platform for PGE Time-of-Day Pricing."""
 
-from __future__ import annotations
-
 import calendar
-import datetime
+import datetime as dt
 import logging
 from typing import Any, NamedTuple
 
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity,
-    SensorStateClass,
-)
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.event import async_track_point_in_time
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
 )
-from homeassistant.helpers.event import async_track_point_in_time
 from homeassistant.util import dt as dt_util
 
 from .const import (
@@ -35,16 +29,16 @@ from .const import (
     DEFAULT_RATE_OFF_PEAK,
     DEFAULT_RATE_ON_PEAK,
     DOMAIN,
-    START_OF_MID_PEAK,
-    START_OF_ON_PEAK,
     END_OF_ON_PEAK,
     MIDNIGHT,
+    START_OF_MID_PEAK,
+    START_OF_ON_PEAK,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 # Fallback polling interval, in case scheduled updates are missed
-SCAN_INTERVAL = datetime.timedelta(minutes=5)
+SCAN_INTERVAL = dt.timedelta(minutes=5)
 
 
 class PGEPricingData(NamedTuple):
@@ -56,19 +50,19 @@ class PGEPricingData(NamedTuple):
     is_weekend: bool
 
 
-def get_observed_holiday(year: int, month: int, day: int) -> datetime.date:
+def get_observed_holiday(year: int, month: int, day: int) -> dt.date:
     """Return the observed date for a fixed-date holiday."""
-    dt = datetime.date(year, month, day)
+    timestamp = dt.date(year, month, day)
     # If the holiday falls on a Saturday, it is observed on the preceding Friday
-    if dt.weekday() == 5:
-        return dt - datetime.timedelta(days=1)
+    if timestamp.weekday() == 5:
+        return timestamp - dt.timedelta(days=1)
     # If the holiday falls on a Sunday, it is observed on the following Monday
-    elif dt.weekday() == 6:
-        return dt + datetime.timedelta(days=1)
-    return dt
+    if timestamp.weekday() == 6:
+        return timestamp + dt.timedelta(days=1)
+    return timestamp
 
 
-def get_nth_weekday(year: int, month: int, nth: int, weekday: int) -> datetime.date:
+def get_nth_weekday(year: int, month: int, nth: int, weekday: int) -> dt.date:
     """Return the date of the nth weekday of a specific month."""
     c = calendar.Calendar(firstweekday=calendar.SUNDAY)
     monthcal = c.monthdatescalendar(year, month)
@@ -81,11 +75,10 @@ def get_nth_weekday(year: int, month: int, nth: int, weekday: int) -> datetime.d
     ]
     if nth > 0:
         return dates[nth - 1]
-    else:
-        return dates[nth]
+    return dates[nth]
 
 
-def get_holidays(year: int) -> set[datetime.date]:
+def get_holidays(year: int) -> set[dt.date]:
     """Calculate the observed PGE holidays for a given year."""
     holidays = set()
 
@@ -108,9 +101,9 @@ def get_holidays(year: int) -> set[datetime.date]:
     holidays.add(get_observed_holiday(year, 12, 25))
 
     # Edge case: Next year's Jan 1st is Saturday, so Dec 31 of current year is observed as holiday
-    next_new_year = datetime.date(year + 1, 1, 1)
+    next_new_year = dt.date(year + 1, 1, 1)
     if next_new_year.weekday() == 5:  # Saturday
-        holidays.add(datetime.date(year, 12, 31))
+        holidays.add(dt.date(year, 12, 31))
 
     return holidays
 
@@ -141,7 +134,7 @@ class PGEPricingCoordinator(DataUpdateCoordinator[PGEPricingData]):
     rate_mid_peak: float
     rate_on_peak: float
     _unsub_next_transition: CALLBACK_TYPE | None
-    _next_expected_transition: datetime.datetime | None
+    _next_expected_transition: dt.datetime | None
     _is_scheduled_update: bool
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
@@ -152,7 +145,7 @@ class PGEPricingCoordinator(DataUpdateCoordinator[PGEPricingData]):
             name=DOMAIN,
             update_interval=SCAN_INTERVAL,
         )
-        opts = entry.options if entry.options else entry.data
+        opts = entry.options or entry.data
         self.rate_off_peak = float(opts.get(CONF_RATE_OFF_PEAK, DEFAULT_RATE_OFF_PEAK))
         self.rate_mid_peak = float(opts.get(CONF_RATE_MID_PEAK, DEFAULT_RATE_MID_PEAK))
         self.rate_on_peak = float(opts.get(CONF_RATE_ON_PEAK, DEFAULT_RATE_ON_PEAK))
@@ -179,7 +172,7 @@ class PGEPricingCoordinator(DataUpdateCoordinator[PGEPricingData]):
             and (data.period != self.data.period or data.cost != self.data.cost)
             and not self._is_scheduled_update
             and self._next_expected_transition is not None
-            and now > self._next_expected_transition + datetime.timedelta(seconds=10)
+            and now > self._next_expected_transition + dt.timedelta(seconds=10)
         ):
             _LOGGER.warning(
                 "Missed scheduled PGE transition at %s! Polling recovered state: %s -> %s (at %s)",
@@ -193,8 +186,7 @@ class PGEPricingCoordinator(DataUpdateCoordinator[PGEPricingData]):
         self._is_scheduled_update = False
 
         # Cancel any pending transition track
-        if self._unsub_next_transition:
-            self._unsub_next_transition()
+        self.cancel_next_transition()
 
         # Schedule the next exact transition point
         self._next_expected_transition = self._get_next_transition(now)
@@ -208,13 +200,19 @@ class PGEPricingCoordinator(DataUpdateCoordinator[PGEPricingData]):
 
         return data
 
-    async def _async_scheduled_update(self, _now: datetime.datetime) -> None:
+    def cancel_next_transition(self) -> None:
+        """Cancel the scheduled transition callback, if present."""
+        if self._unsub_next_transition:
+            self._unsub_next_transition()
+            self._unsub_next_transition = None
+
+    async def _async_scheduled_update(self, _now: dt.datetime) -> None:
         """Triggered at a specific transition point."""
         _LOGGER.debug("PGE Scheduled transition triggered")
         self._is_scheduled_update = True
         await self.async_refresh()
 
-    def _get_next_transition(self, now: datetime.datetime) -> datetime.datetime:
+    def _get_next_transition(self, now: dt.datetime) -> dt.datetime:
         """Calculate the next time the pricing period will change."""
         today = now.date()
         transition_times = [
@@ -225,17 +223,17 @@ class PGEPricingCoordinator(DataUpdateCoordinator[PGEPricingData]):
         ]
 
         for t in transition_times:
-            transition = dt_util.as_local(datetime.datetime.combine(today, t))
+            transition = dt_util.as_local(dt.datetime.combine(today, t))
             if transition > now:
                 return transition
 
         # No more transitions today, next is tomorrow at midnight
-        tomorrow = today + datetime.timedelta(days=1)
+        tomorrow = today + dt.timedelta(days=1)
         return dt_util.as_local(
-            datetime.datetime.combine(tomorrow, transition_times[0])
+            dt.datetime.combine(tomorrow, transition_times[0])
         )
 
-    def _calculate_data(self, now: datetime.datetime) -> PGEPricingData:
+    def _calculate_data(self, now: dt.datetime) -> PGEPricingData:
         """Calculate the current pricing data based on the schedule."""
         current_date = now.date()
         current_time = now.time()
@@ -249,17 +247,16 @@ class PGEPricingCoordinator(DataUpdateCoordinator[PGEPricingData]):
         if is_weekend or is_holiday:
             period = "off-peak"
             cost = self.rate_off_peak
+        # Weekday non-holiday schedule
+        elif START_OF_ON_PEAK <= current_time < END_OF_ON_PEAK:
+            period = "on-peak"
+            cost = self.rate_on_peak
+        elif START_OF_MID_PEAK <= current_time < START_OF_ON_PEAK:
+            period = "mid-peak"
+            cost = self.rate_mid_peak
         else:
-            # Weekday non-holiday schedule
-            if START_OF_ON_PEAK <= current_time < END_OF_ON_PEAK:
-                period = "on-peak"
-                cost = self.rate_on_peak
-            elif START_OF_MID_PEAK <= current_time < START_OF_ON_PEAK:
-                period = "mid-peak"
-                cost = self.rate_mid_peak
-            else:
-                period = "off-peak"
-                cost = self.rate_off_peak
+            period = "off-peak"
+            cost = self.rate_off_peak
 
         return PGEPricingData(period, cost, is_holiday, is_weekend)
 
@@ -279,9 +276,7 @@ class PGEPricingBaseEntity(CoordinatorEntity[PGEPricingCoordinator], SensorEntit
 
     async def async_will_remove_from_hass(self) -> None:
         """Cleanup any scheduled transition callback when the entity is removed."""
-        if self.coordinator._unsub_next_transition:
-            self.coordinator._unsub_next_transition()
-            self.coordinator._unsub_next_transition = None
+        self.coordinator.cancel_next_transition()
 
         await super().async_will_remove_from_hass()
 

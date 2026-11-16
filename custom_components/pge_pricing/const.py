@@ -4,7 +4,7 @@
 
 """Constants for the PGE Time-of-Day Price integration."""
 
-import datetime
+import datetime as dt
 from typing import Final
 
 DOMAIN: Final = "pge_pricing"
@@ -17,7 +17,7 @@ DEFAULT_RATE_OFF_PEAK: Final = 0.0893
 DEFAULT_RATE_MID_PEAK: Final = 0.1670
 DEFAULT_RATE_ON_PEAK: Final = 0.4313
 
-START_OF_MID_PEAK: Final = datetime.time(7, 0)
-START_OF_ON_PEAK: Final = datetime.time(17, 0)
-END_OF_ON_PEAK: Final = datetime.time(21, 0)
-MIDNIGHT: Final = datetime.time(0, 0)
+START_OF_MID_PEAK: Final = dt.time(7, 0)
+START_OF_ON_PEAK: Final = dt.time(17, 0)
+END_OF_ON_PEAK: Final = dt.time(21, 0)
+MIDNIGHT: Final = dt.time(0, 0)

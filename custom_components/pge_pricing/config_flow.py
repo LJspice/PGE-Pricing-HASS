@@ -4,12 +4,11 @@
 
 """Config flow for PGE Time-of-Day Price integration."""
 
-from __future__ import annotations
-
 import logging
 from typing import Any
 
-import voluptuous as vol
+from probatio import All, Coerce, Range, Required, Schema
+
 from homeassistant import config_entries
 from homeassistant.core import callback
 
@@ -44,20 +43,20 @@ class PGEPricingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 title="PGE Time-of-Day Price", data=user_input
             )
 
-        data_schema: vol.Schema = vol.Schema(
+        data_schema: Schema = Schema(
             {
-                vol.Required(
+                Required(
                     CONF_RATE_OFF_PEAK,
                     default=DEFAULT_RATE_OFF_PEAK,
-                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
-                vol.Required(
+                ): All(Coerce(float), Range(min=0.0)),
+                Required(
                     CONF_RATE_MID_PEAK,
                     default=DEFAULT_RATE_MID_PEAK,
-                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
-                vol.Required(
+                ): All(Coerce(float), Range(min=0.0)),
+                Required(
                     CONF_RATE_ON_PEAK,
                     default=DEFAULT_RATE_ON_PEAK,
-                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
+                ): All(Coerce(float), Range(min=0.0)),
             }
         )
 
@@ -89,29 +88,29 @@ class PGEPricingOptionsFlow(config_entries.OptionsFlow):
         options = self._config_entry.options
         data = self._config_entry.data
 
-        data_schema: vol.Schema = vol.Schema(
+        data_schema: Schema = Schema(
             {
-                vol.Required(
+                Required(
                     CONF_RATE_OFF_PEAK,
                     default=options.get(
                         CONF_RATE_OFF_PEAK,
                         data.get(CONF_RATE_OFF_PEAK, DEFAULT_RATE_OFF_PEAK),
                     ),
-                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
-                vol.Required(
+                ): All(Coerce(float), Range(min=0.0)),
+                Required(
                     CONF_RATE_MID_PEAK,
                     default=options.get(
                         CONF_RATE_MID_PEAK,
                         data.get(CONF_RATE_MID_PEAK, DEFAULT_RATE_MID_PEAK),
                     ),
-                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
-                vol.Required(
+                ): All(Coerce(float), Range(min=0.0)),
+                Required(
                     CONF_RATE_ON_PEAK,
                     default=options.get(
                         CONF_RATE_ON_PEAK,
                         data.get(CONF_RATE_ON_PEAK, DEFAULT_RATE_ON_PEAK),
                     ),
-                ): vol.All(vol.Coerce(float), vol.Range(min=0.0)),
+                ): All(Coerce(float), Range(min=0.0)),
             }
         )
 
